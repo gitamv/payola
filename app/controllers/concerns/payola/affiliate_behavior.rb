@@ -8,10 +8,8 @@ module Payola
 
     def find_affiliate
       affiliate_code = cookies[:aff] || params[:aff]
-      @affiliate = Affiliate.where('lower(code) = lower(?)', affiliate_code).first
-      if @affiliate
-        cookies[:aff] = affiliate_code
-      end
+      @affiliate = Payola::Affiliate.where('lower(code) = lower(?)', affiliate_code).first
+      cookies[:aff] = affiliate_code if @affiliate
     end
   end
 end
