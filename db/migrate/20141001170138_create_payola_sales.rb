@@ -5,8 +5,6 @@ class CreatePayolaSales < ActiveRecord::Migration[4.2]
       t.string   "guid",          limit: 191
       t.integer  "product_id"
       t.string   "product_type",  limit: 100
-      t.datetime "created_at"
-      t.datetime "updated_at"
       t.string   "state"
       t.string   "stripe_id"
       t.string   "stripe_token"
