@@ -47,7 +47,7 @@ module Payola
     end
 
     def subscribe(name, callable = nil)
-      StripeEvent.subscribe(name, callable || Proc.new)
+      StripeEvent.subscribe(name, callable || -> {})
     end
 
     def instrument(name, object)
@@ -55,7 +55,7 @@ module Payola
     end
 
     def all(callable = nil)
-      StripeEvent.all(callable || Proc.new)
+      StripeEvent.all(callable || -> {})
     end
 
     def queue!(klass, *args)
