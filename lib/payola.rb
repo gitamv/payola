@@ -46,16 +46,16 @@ module Payola
       publishable_key_retriever.call(sale).to_s
     end
 
-    def subscribe(name, &block)
-      StripeEvent.subscribe(name, &block)
+    def subscribe(name, callable = Proc.new)
+      StripeEvent.subscribe(name, callable)
     end
 
     def instrument(name, object)
       StripeEvent.backend.instrument(StripeEvent.namespace.call(name), object)
     end
 
-    def all(&block)
-      StripeEvent.all(&block)
+    def all(callable = Proc.new)
+      StripeEvent.all(callable)
     end
 
     def queue!(klass, *args)
