@@ -6,16 +6,16 @@ module Payola
 
     has_paper_trail if respond_to? :has_paper_trail
 
-    validates_presence_of :email
-    validates_presence_of :product_id
-    validates_presence_of :product_type
-    validates_presence_of :stripe_token
-    validates_presence_of :currency
+    validates :email, presence: true
+    validates :product_id, presence: true
+    validates :product_type, presence: true
+    validates :stripe_token, presence: true
+    validates :currency, presence: true
 
-    belongs_to :product, Rails::VERSION::MAJOR > 4 ? { polymorphic: true, optional: true } : { polymorphic: true }
-    belongs_to :owner, Rails::VERSION::MAJOR > 4 ? { polymorphic: true, optional: true } : { polymorphic: true }
-    belongs_to :coupon, Rails::VERSION::MAJOR > 4 ? { optional: true } : {}
-    belongs_to :affiliate, Rails::VERSION::MAJOR > 4 ? { optional: true } : {}
+    belongs_to :product, polymorphic: true, optional: true
+    belongs_to :owner, polymorphic: true, optional: true
+    belongs_to :coupon, optional: true
+    belongs_to :affiliate, optional: true
 
     include AASM
 
@@ -35,7 +35,7 @@ module Payola
       end
 
       event :fail, after: :instrument_fail do
-        transitions from: [:pending, :processing], to: :errored
+        transitions from: %i[pending processing], to: :errored
       end
 
       event :refund, after: :instrument_refund do
@@ -48,12 +48,10 @@ module Payola
     end
 
     def verify_charge
-      begin
-        self.verify_charge!
-      rescue RuntimeError => e
-        self.error = e.message
-        self.fail!
-      end
+      verify_charge!
+    rescue RuntimeError => e
+      self.error = e.message
+      fail!
     end
 
     def verify_charge!
@@ -65,11 +63,7 @@ module Payola
     end
 
     def custom_fields
-      if self.signed_custom_fields.present?
-        verifier.verify(self.signed_custom_fields)
-      else
-        nil
-      end      
+      verifier.verify(signed_custom_fields) if signed_custom_fields.present?
     end
 
     def redirector
@@ -101,13 +95,12 @@ module Payola
       product.product_class
     end
 
-    def instrument_key(instrument_type, include_class=true)
+    def instrument_key(instrument_type, include_class = true)
       if include_class
         "payola.#{product_class}.sale.#{instrument_type}"
       else
         "payola.sale.#{instrument_type}"
       end
     end
-
   end
 end

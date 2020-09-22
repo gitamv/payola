@@ -1,7 +1,6 @@
 module Payola
   class CardsController < ApplicationController
-
-    before_action :check_modify_permissions, only: [:create, :destroy]
+    before_action :check_modify_permissions, only: %i[create destroy]
 
     def create
       if params[:customer_id].present? && params[:stripeToken].present?
@@ -26,15 +25,16 @@ module Payola
     private
 
     def check_modify_permissions
-      if self.respond_to?(:payola_can_modify_customer?)
-        redirect_to(
-          return_to,
-          alert: t('payola.cards.not_authorized')
-        ) and return unless self.payola_can_modify_customer?(params[:customer_id])
+      if respond_to?(:payola_can_modify_customer?)
+        unless payola_can_modify_customer?(params[:customer_id])
+          redirect_to(
+            return_to,
+            alert: t('payola.cards.not_authorized')
+          ) and return
+        end
       else
-        raise NotImplementedError.new("Please implement ApplicationController#payola_can_modify_customer?")
+        raise NotImplementedError, 'Please implement ApplicationController#payola_can_modify_customer?'
       end
     end
-
   end
 end

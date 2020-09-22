@@ -12,7 +12,7 @@ module Payola
       def self.call(klass, *args)
         perform_later(klass.to_s, *args)
       end
-  
+
       def perform(klass, *args)
         klass.safe_constantize.call(*args)
       end

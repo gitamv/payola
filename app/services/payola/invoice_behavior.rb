@@ -22,7 +22,7 @@ module Payola
 
         update_sale_with_charge(sale, charge, secret_key)
 
-        return sale, charge
+        [sale, charge]
       end
 
       def create_sale(subscription, invoice)
@@ -50,6 +50,5 @@ module Payola
         end
       end
     end
-
   end
 end

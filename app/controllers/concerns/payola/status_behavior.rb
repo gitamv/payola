@@ -8,9 +8,9 @@ module Payola
       errors = ([object.error.presence] + object.errors.full_messages).compact.to_sentence
 
       render json: {
-        guid:   object.guid,
+        guid: object.guid,
         status: object.state,
-        error:  errors.presence
+        error: errors.presence
       }, status: errors.blank? ? 200 : 400
     end
   end

@@ -5,10 +5,10 @@ module Payola
     extend ActiveSupport::Concern
 
     included do
-      validates_presence_of :name
-      validates_presence_of :permalink
-      validates_presence_of :price
-      validates_uniqueness_of :permalink
+      validates :name, presence: true
+      validates :permalink, presence: true
+      validates :price, presence: true
+      validates :permalink, uniqueness: true
 
       Payola.register_sellable(self)
     end
@@ -23,7 +23,7 @@ module Payola
       end
 
       def product_class
-        self.to_s.underscore
+        to_s.underscore
       end
     end
   end
