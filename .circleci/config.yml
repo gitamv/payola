@@ -10,7 +10,7 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Which bundler?
+          name: Which bundler
           command: bundle -v
       - run: sudo apt-get install --only-upgrade sqlite3 libsqlite3-dev
       - run: sqlite3 --version
