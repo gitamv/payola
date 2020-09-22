@@ -3,9 +3,14 @@ source 'https://rubygems.org'
 gemspec
 
 group :test do
-  gem 'simplecov', require: false
   gem 'codeclimate-test-reporter', require: nil
+  gem 'rspec_junit_formatter'
+  gem 'simplecov', require: false
 end
-gem 'rspec_junit_formatter'
 
-gem 'rails', git: 'https://github.com/rails/rails', branch: '5-0-stable'
+group :rubocop do
+  gem 'rubocop', require: false
+  gem 'rubocop-rails', require: false
+end
+
+gem 'rails', '>= 4.1'

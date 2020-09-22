@@ -26,9 +26,9 @@ module Payola
         Stripe::Customer.retrieve(sale.stripe_customer_id, secret_key)
       else
         Stripe::Customer.create({
-          source: sale.stripe_token,
-          email: sale.email
-        }, secret_key)
+                                  source: sale.stripe_token,
+                                  email: sale.email
+                                }, secret_key)
       end
     end
 
@@ -37,7 +37,7 @@ module Payola
         amount: sale.amount,
         currency: sale.currency,
         customer: customer.id,
-        description: sale.guid,
+        description: sale.guid
       }.merge(Payola.additional_charge_attributes.call(sale, customer))
 
       Stripe::Charge.create(charge_attributes, secret_key)
@@ -52,14 +52,13 @@ module Payola
       end
 
       sale.update(
-        stripe_id:          charge.id,
+        stripe_id: charge.id,
         stripe_customer_id: customer.id,
-        card_last4:         charge.source.last4,
-        card_expiration:    Date.new(charge.source.exp_year, charge.source.exp_month, 1),
-        card_type:          charge.source.brand,
-        fee_amount:         fee
+        card_last4: charge.source.last4,
+        card_expiration: Date.new(charge.source.exp_year, charge.source.exp_month, 1),
+        card_type: charge.source.brand,
+        fee_amount: fee
       )
     end
-
   end
 end

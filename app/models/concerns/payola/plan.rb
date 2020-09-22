@@ -5,17 +5,17 @@ module Payola
     extend ActiveSupport::Concern
 
     included do
-      validates_presence_of :amount
-      validates_presence_of :interval
-      validates_presence_of :stripe_id
-      validates_presence_of :name
+      validates :amount, presence: true
+      validates :interval, presence: true
+      validates :stripe_id, presence: true
+      validates :name, presence: true
 
-      validates_uniqueness_of :stripe_id
+      validates :stripe_id, uniqueness: true
 
       before_create :create_stripe_plan, if: -> { Payola.create_stripe_plans }
 
-      has_many :subscriptions, :class_name => "Payola::Subscription", as: :plan,
-        dependent: :restrict_with_exception
+      has_many :subscriptions, class_name: 'Payola::Subscription', as: :plan,
+                               dependent: :restrict_with_exception
 
       Payola.register_subscribable(self)
     end
@@ -42,9 +42,8 @@ module Payola
       end
 
       def plan_class
-        self.to_s.underscore.parameterize
+        to_s.underscore.parameterize
       end
     end
-
   end
 end

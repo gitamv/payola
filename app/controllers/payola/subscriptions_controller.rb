@@ -4,8 +4,8 @@ module Payola
     include Payola::StatusBehavior
     include Payola::AsyncBehavior
 
-    before_action :find_plan_coupon_quantity_and_trial_end, only: [:create, :change_plan]
-    before_action :check_modify_permissions, only: [:destroy, :change_plan, :change_quantity, :update_card]
+    before_action :find_plan_coupon_quantity_and_trial_end, only: %i[create change_plan]
+    before_action :check_modify_permissions, only: %i[destroy change_plan change_quantity update_card]
 
     def show
       show_object(Subscription)
@@ -59,9 +59,9 @@ module Payola
     def find_plan
       @plan_class = Payola.subscribables[params[:plan_class]]
 
-      raise ActionController::RoutingError.new('Not Found') unless @plan_class && @plan_class.subscribable?
+      raise ActionController::RoutingError.new('Not Found') unless @plan_class&.subscribable?
 
-      @plan = @plan_class.find_by!(id: params[:plan_id])
+      @plan = @plan_class.find(params[:plan_id])
     end
 
     def find_coupon
@@ -78,13 +78,15 @@ module Payola
 
     def check_modify_permissions
       subscription = Subscription.find_by!(guid: params[:guid])
-      if self.respond_to?(:payola_can_modify_subscription?)
-        redirect_to(
-          confirm_subscription_path(subscription),
-          alert: t('payola.subscriptions.not_authorized')
-        ) and return unless self.payola_can_modify_subscription?(subscription)
+      if respond_to?(:payola_can_modify_subscription?)
+        unless payola_can_modify_subscription?(subscription)
+          redirect_to(
+            confirm_subscription_path(subscription),
+            alert: t('payola.subscriptions.not_authorized')
+          ) and return
+        end
       else
-        raise NotImplementedError.new("Please implement ApplicationController#payola_can_modify_subscription?")
+        raise NotImplementedError.new('Please implement ApplicationController#payola_can_modify_subscription?')
       end
     end
 
@@ -101,6 +103,5 @@ module Payola
     def to_boolean(value)
       TRUE_VALUES.include?(value)
     end
-
   end
 end

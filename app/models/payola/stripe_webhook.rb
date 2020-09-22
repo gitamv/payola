@@ -1,5 +1,5 @@
 module Payola
   class StripeWebhook < ActiveRecord::Base
-    validates_uniqueness_of :stripe_id
+    validates :stripe_id, uniqueness: true
   end
 end
